@@ -1,0 +1,21 @@
+# 构建产物
+/build/
+bingbot.apk
+bingbot.apk.idsig
+
+# 签名密钥（build.sh 会在缺失时自动生成）
+debug.keystore
+
+# 调试留下的页面转储与截图（只匹配仓库根目录，res/ 下的真实资源不受影响）
+/*.png
+/*.xml
+!/AndroidManifest.xml
+last.log
+*.log
+
+# 编辑器 / 系统垃圾
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

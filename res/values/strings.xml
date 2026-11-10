@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bing积分助手</string>
+    <string name="svc_desc">用于自动完成必应每日搜索与阅读积分任务的辅助服务。仅在必应应用内模拟点击与滑动。</string>
+</resources>
