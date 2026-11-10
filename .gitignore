@@ -13,6 +13,9 @@ debug.keystore
 last.log
 *.log
 
+# 本机专用配置（SDK / JDK / adb 的真实路径），每台机器自己建
+local.env
+
 # 编辑器 / 系统垃圾
 .idea/
 .vscode/

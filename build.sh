@@ -7,20 +7,28 @@
 #   JDK 11+（keytool / javac / java）
 #
 # 可用环境变量覆盖默认值：
-#   ANDROID_SDK    SDK 根目录，默认 D:/Tools/android-sdk
+#   ANDROID_SDK    SDK 根目录，默认取 $ANDROID_HOME，再退到 ~/Android/Sdk
 #   BT_VERSION     build-tools 版本，默认 34.0.0
-#   BINGBOT_JDK    JDK 目录，默认 D:/Tools/jdk-21.0.12.1+1
+#   BINGBOT_JDK    JDK 目录，默认取 $JAVA_HOME
 #   AJAR           android.jar 的完整路径（覆盖 ANDROID_SDK 推导结果）
+#
+# 本机路径不标准时，写进同目录的 local.env（已被 .gitignore 排除，不会进仓库）：
+#   ANDROID_SDK=/path/to/android-sdk
+#   BINGBOT_JDK=/path/to/jdk
 set -e
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"
 
-ANDROID_SDK="${ANDROID_SDK:-D:/Tools/android-sdk}"
+if [ -f local.env ]; then
+    . ./local.env
+fi
+
+ANDROID_SDK="${ANDROID_SDK:-${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}}}"
 BT_VERSION="${BT_VERSION:-34.0.0}"
 BT="$ANDROID_SDK/build-tools/$BT_VERSION"
 AJAR="${AJAR:-$ANDROID_SDK/platforms/android-36/android.jar}"
-JDK_DIR="${BINGBOT_JDK:-/d/Tools/jdk-21.0.12.1+1}"
+JDK_DIR="${BINGBOT_JDK:-$JAVA_HOME}"
 
 # ---------------------------------------------------------------- 预检
 missing=0
@@ -48,6 +56,9 @@ if [ "$missing" = 1 ]; then
     echo "" >&2
     echo "请先安装 Android SDK build-tools 与 platform，或用环境变量指到正确位置：" >&2
     echo "  ANDROID_SDK=/path/to/sdk BT_VERSION=34.0.0 BINGBOT_JDK=/path/to/jdk ./build.sh" >&2
+    echo "也可以在 build.sh 同目录建一个 local.env 写上这几行（不会被提交）：" >&2
+    echo "  ANDROID_SDK=/path/to/sdk" >&2
+    echo "  BINGBOT_JDK=/path/to/jdk" >&2
     exit 1
 fi
 export PATH="$JAVA_HOME/bin:$PATH"

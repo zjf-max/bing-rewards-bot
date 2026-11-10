@@ -1,8 +1,12 @@
 #!/bin/bash
 # 真机部署与验证辅助
 set -e
-ADB="D:/Tools/platform-tools-latest-windows/platform-tools/adb.exe"
-cd /d/Workspace/apk_crack/bingbot
+cd "$(dirname "$0")"
+# 本机 adb 路径写在 local.env 的 ADB=... 里；没配就用 PATH 上的 adb
+if [ -f local.env ]; then
+    . ./local.env
+fi
+ADB="${ADB:-adb}"
 
 cmd="$1"
 

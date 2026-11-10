@@ -5,7 +5,7 @@
 不需要连电脑，不需要 AutoX.js / Tasker 之类的第三方运行时，装完就是一个 41 KB 的原生 APK，开机自启 + 定时触发，全程在手机上自己跑完。
 
 ```
-D:\Workspace\apk_crack\bingbot\
+bing-rewards-bot/
 ├── AndroidManifest.xml
 ├── build.sh            # 一键构建，不依赖 Gradle
 ├── test.sh             # 真机调试助手
@@ -93,6 +93,16 @@ BT_VERSION=34.0.0 \
 BINGBOT_JDK=/path/to/jdk \
 ./build.sh
 ```
+
+嫌每次都写太长，就在 build.sh 同目录建一个 `local.env`（已被 `.gitignore` 排除，不会进仓库）：
+
+```bash
+ANDROID_SDK=/path/to/android-sdk
+BINGBOT_JDK=/path/to/jdk
+ADB=/path/to/adb          # test.sh 也读这个文件
+```
+
+默认查找顺序：`$ANDROID_SDK` → `$ANDROID_HOME` → `~/Android/Sdk`；JDK 取 `$BINGBOT_JDK` → `$JAVA_HOME`。
 
 脚本会先做一遍预检，缺文件时直接报出具体路径。六个步骤：
 
@@ -276,7 +286,7 @@ NullPointerException: Cannot invoke "String.length()" because "<parameter1>" is 
 
 ### 7. 读者可能遇到的两个小问题
 
-- **`javac: command not found`**：`PATH` 里不能塞 Windows 形式的路径（`D:/...`），脚本会用 `cygpath` 转成 POSIX 路径。
+- **`javac: command not found`**：`PATH` 里不能直接塞 Windows 形式的盘符路径（反斜杠或 `X:/`），Git Bash 解析不到。脚本会用 `cygpath` 转成 POSIX 路径，所以 `local.env` 里写 `/d/...` 或 `D:/...` 都可以。
 - **`debug.keystore` 口令**：固定 `android`，删掉后构建脚本会自动重建。
 
 ## 代码结构
@@ -321,7 +331,7 @@ adb logcat -d -v time -s BingBot:V | tail -40   # 看最后 40 行
 [09:45:34]   提交方式: 输入法右下角
 [09:45:34]   ✓ 搜索成功: vpn protocol beginner tips
 [09:45:34]   用时 5.358s
-[09:45:39]   阅读 8s「小沈阳每个月给他哥哥的卡里打5万，雷」
+[09:45:39]   阅读 8s「如何挑选一把适合自己的机械键盘」
 [09:45:49]   ✓ 完成一篇（打开 1.149s + 停留 8s）
 [09:45:50] === 结束：搜索 1/1, 阅读 1/1 ===
 ```
