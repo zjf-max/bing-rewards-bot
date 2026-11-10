@@ -119,6 +119,19 @@ ADB=/path/to/adb          # test.sh 也读这个文件
 
 `debug.keystore` 口令固定为 `android`，只在缺失时生成，已被 `.gitignore` 排除。换成自己的正式签名只需替换这个文件。
 
+## 发布
+
+推一个 `v*` 标签，GitHub Actions 会自动构建并创建 Release：
+
+```bash
+git tag -a v1.0.1 -m "v1.0.1"
+git push origin v1.0.1
+```
+
+CI 会完成构建、算 SHA256、创建 Release，并把 APK 与校验和文件挂上去。用的是仓库自带的 `GITHUB_TOKEN`，**不需要配置任何个人令牌**。发布说明取自仓库根目录的 `RELEASE_NOTES.md`，每次发版前改这个文件即可。
+
+> ⚠️ 标签必须指向**包含工作流文件的那个提交**。如果标签指向的是加工作流之前的提交，GitHub 不会触发构建，而且**不报错**——只是静默地什么都不发生。先 `git push origin main` 再打标签就没这个问题。
+
 ## 安装与授权
 
 ```bash
