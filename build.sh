@@ -30,9 +30,17 @@ BT="$ANDROID_SDK/build-tools/$BT_VERSION"
 AJAR="${AJAR:-$ANDROID_SDK/platforms/android-36/android.jar}"
 JDK_DIR="${BINGBOT_JDK:-$JAVA_HOME}"
 
+# Windows 的 build-tools 里工具带 .exe 后缀，Linux/macOS 不带
+case "$(uname -s 2>/dev/null || echo Windows)" in
+  MINGW*|MSYS*|CYGWIN*|Windows*) EXE=".exe" ;;
+  *) EXE="" ;;
+esac
+AAPT2="$BT/aapt2$EXE"
+ZIPALIGN="$BT/zipalign$EXE"
+
 # ---------------------------------------------------------------- 预检
 missing=0
-for f in "$BT/aapt2.exe" "$BT/zipalign.exe" "$BT/lib/d8.jar" "$BT/lib/apksigner.jar" "$AJAR"; do
+for f in "$AAPT2" "$ZIPALIGN" "$BT/lib/d8.jar" "$BT/lib/apksigner.jar" "$AJAR"; do
     if [ ! -f "$f" ]; then
         echo "缺少: $f" >&2
         missing=1
@@ -67,10 +75,10 @@ rm -rf build
 mkdir -p build/gen build/classes build/dex
 
 echo "[1/6] 编译资源"
-"$BT/aapt2.exe" compile --dir res -o build/res.zip
+"$AAPT2" compile --dir res -o build/res.zip
 
 echo "[2/6] 链接资源并生成 R.java"
-"$BT/aapt2.exe" link \
+"$AAPT2" link \
   -o build/base.apk \
   -I "$AJAR" \
   --manifest AndroidManifest.xml \
@@ -93,14 +101,17 @@ java -cp "$BT/lib/d8.jar" com.android.tools.r8.D8 \
   --output build/dex @build/classes.txt
 
 echo "[5/6] 封包"
-python - <<'PY'
+# Linux 上只有 python3，没有 python
+PY=python
+command -v python >/dev/null 2>&1 || PY=python3
+"$PY" - <<'PY'
 import zipfile, shutil, os
 shutil.copyfile('build/base.apk', 'build/app-unsigned.apk')
 with zipfile.ZipFile('build/app-unsigned.apk', 'a', zipfile.ZIP_DEFLATED) as z:
     z.write('build/dex/classes.dex', 'classes.dex')
 print('   classes.dex 已写入，大小 %d' % os.path.getsize('build/dex/classes.dex'))
 PY
-"$BT/zipalign.exe" -f -p 4 build/app-unsigned.apk build/app-aligned.apk
+"$ZIPALIGN" -f -p 4 build/app-unsigned.apk build/app-aligned.apk
 
 echo "[6/6] 签名"
 if [ ! -f debug.keystore ]; then
