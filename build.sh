@@ -69,9 +69,10 @@ echo "[2/6] 链接资源并生成 R.java"
 echo "[3/6] 编译 Java"
 find src build/gen -name "*.java" > build/sources.txt
 # 注意：必须用 --release 11。用 -source 8 -target 8 时 d8 处理匿名内部类会崩。
-javac --release 11 -encoding UTF-8 -nowarn \
+javac -J-Duser.language=en -J-Duser.country=US \
+  --release 11 -encoding UTF-8 -nowarn \
   -classpath "$AJAR" \
-  -d build/classes @build/sources.txt 2>&1 | grep -a -viE "^注|warning|deprecat" || true
+  -d build/classes @build/sources.txt 2>&1 | grep -a -viE "^注|^Note|warning|deprecat" || true
 test -f build/classes/com/a11y/bingbot/MainActivity.class || { echo "编译失败：找不到 MainActivity.class"; exit 1; }
 
 echo "[4/6] 生成 dex"
