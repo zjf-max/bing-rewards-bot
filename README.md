@@ -4,6 +4,8 @@
 
 不需要连电脑，不需要 AutoX.js / Tasker 之类的第三方运行时，装完就是一个 41 KB 的原生 APK，开机自启 + 定时触发，全程在手机上自己跑完。
 
+> 📦 想要现成的 APK，去 [Releases 页面](https://github.com/zjf-max/bing-rewards-bot/releases) 下载。
+
 ```
 bing-rewards-bot/
 ├── AndroidManifest.xml

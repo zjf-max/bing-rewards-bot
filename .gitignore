@@ -16,6 +16,9 @@ last.log
 # 本机专用配置（SDK / JDK / adb 的真实路径），每台机器自己建
 local.env
 
+# 发布物料目录（APK 与校验和由构建脚本生成，不进仓库）
+/dist/
+
 # 编辑器 / 系统垃圾
 .idea/
 .vscode/
